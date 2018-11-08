@@ -1,0 +1,19 @@
+{
+  "name": "node-reptile-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "supervisor index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "koa": "^2.6.1",
+    "koa-router": "^7.4.0",
+    "koa2-cors": "^2.0.6",
+    "request": "^2.88.0"
+  }
+}
