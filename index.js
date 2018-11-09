@@ -14,11 +14,91 @@ let router = require('koa-router')();
 let fs = require('fs');
 // koa处理跨域请求
 let cors = require('koa2-cors');
+// 引入mysql
+let mysql = require('mysql');
+//引入sha1加密
+let sha1 = require('sha1');
+//引入jwt
+let jwt = require('jsonwebtoken');
+
+/* 前端传来的用户数据 */
+let user = {
+    name: 'xiaofeng',
+    psd: sha1('coderxf123')
+};
+
+/* 生成token */
+let token = jwt.sign(user, 'xff', {
+    expiresIn: 3,  // 过期时间(3小时过期)
+    issuer: 'otec',  // 发行者
+});
+
+/* 解密 */
+try {
+    /*
+     解密成功：{
+         name: 'xiaofeng',
+         psd: '0caef48a9fe01f27bd9ef058341f334b7daa58c5',
+         iat: 1541748209,  // token生成的时间毫秒数
+         exp: 1541748329   // token失效的时间毫秒数
+         iss: 'otec'
+      }
+    */
+   let tokenInfo = jwt.verify(token, 'xff');
+   console.log('解密成功：', tokenInfo);
+
+}catch (e){
+    console.log('解密失败(token时间过期/签名无效)', e);
+}
+
+
 
 let app = new Koa();
 
 // 爬取网站的数据后生成JSON文件，此处设置JSON文件的保存路径
 let savePath = 'E:/reptile/wuhanlvyou';
+
+/*
+
+// 创建数据库连接
+let connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'root',
+    password : '888888',
+    database : 'wuhan_lvyou'
+});
+
+// 连接数据库
+connection.connect();
+
+// 查询
+connection.query('SELECT * FROM news where id=?', ['10'], function (err, result) {
+    if(err){
+        console.log('查询失败:', err);
+        return
+    }
+    console.log(result);
+});
+
+// 修改
+let param = '哈哈哈改标题！';
+connection.query('UPDATE news SET title=? where id=?', [param,'10'], function (err, result) {
+    if(err){
+        console.log('更新失败:', err);
+        return
+    }
+    console.log(result);
+});
+
+// 删除
+connection.query('DELETE FROM news where id=10', function (err, result) {
+    if(err){
+        console.log('删除失败:', err);
+        return
+    }
+    console.log(result);
+});*/
+
 
 // 解决跨域问题
 app.use(cors());
@@ -108,6 +188,14 @@ function filterNode(html) {
                 news_url,
                 time
             });
+
+            // 保存到数据库
+            /*connection.query('INSERT INTO news(id,title,url,time,create_time) VALUES(0,?,?,?,?)', [title, news_url, time, new Date().toLocaleString()], function (err, result) {
+                if(err){
+                    console.log('保存失败：',err.message);
+                }
+            });*/
+
         });
         // 返回数据JSON数组
         return newsList;
